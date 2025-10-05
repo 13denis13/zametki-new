@@ -15,28 +15,25 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Получаем токен и URL для вебхука
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_PATH = "/webhook"
 APP_HOST = "0.0.0.0"
 APP_PORT = int(os.getenv("PORT", 10000))
 
-# Инициализируем бота и диспетчера
+
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 scheduler = AsyncIOScheduler(timezone=pytz.timezone('Europe/Moscow'))
 
-# Подключаем роутер
 dp.include_router(router)
 
-# Устанавливаем вебхук при старте
 async def on_startup(app: web.Application):
     webhook_url = f"https://<zametki-new
 >.onrender.com{WEBHOOK_PATH}"  
     await bot.set_webhook(webhook_url)
     await init_db()
 
-    # Добавляем задачу в планировщик
     scheduler.add_job(
         send_weekly_reports,
         'cron',
@@ -48,13 +45,11 @@ async def on_startup(app: web.Application):
     scheduler.start()
     logger.info("Bot webhook set and scheduler started.")
 
-# Удаляем вебхук при выключении
 async def on_shutdown(app: web.Application):
     await bot.delete_webhook()
     scheduler.shutdown()
     logger.info("Bot webhook deleted and scheduler stopped.")
 
-# Обработчик вебхука
 async def handle_webhook(request):
     if request.path == WEBHOOK_PATH and request.method == 'POST':
         try:
@@ -69,13 +64,11 @@ async def handle_webhook(request):
         return web.Response(text="Not Found", status=404)
 
 def main():
-    # Создаём aiohttp приложение
     app = web.Application()
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
     app.router.add_post(WEBHOOK_PATH, handle_webhook)
-
-    # Запускаем приложение
+    
     web.run_app(
         app,
         host=APP_HOST,
