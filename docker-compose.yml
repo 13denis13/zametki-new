@@ -1,0 +1,11 @@
+
+
+services:
+  bot:
+    build: .
+    volumes:
+      # Монтируем файл базы данных извне
+      - ./mydatabase.db:/app/mydatabase.db
+      # Монтируем .env файл
+      - ./.env:/app/.env
+    restart: unless-stopped
