@@ -31,7 +31,8 @@ dp.include_router(router)
 
 # Устанавливаем вебхук при старте
 async def on_startup(app: web.Application):
-    webhook_url = f"https://<your-app-name>.onrender.com{WEBHOOK_PATH}"  # Замени на свой URL
+    webhook_url = f"https://<zametki-new
+>.onrender.com{WEBHOOK_PATH}"  
     await bot.set_webhook(webhook_url)
     await init_db()
 
